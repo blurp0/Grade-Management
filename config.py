@@ -1,7 +1,9 @@
 # config.py
 class Config:
-    SECRET_KEY = "change-me"
-    SQLALCHEMY_DATABASE_URI = "sqlite:///grades.db"
+    SQLALCHEMY_DATABASE_URI = (
+        "mysql+pymysql://root:@localhost:3306/grade_manage"
+        #            └─ empty password after the colon
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class DevelopmentConfig(Config):
