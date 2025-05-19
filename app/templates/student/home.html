@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>Welcome, {{ g.get('student_name', 'Student') }}!</h2>
+    <p>Here are your current grades:</p>
+
+    <table>
+      <tr><th>Course</th><th>Assignment</th><th>Score</th><th>Status</th></tr>
+      <tr><td>CS 101</td><td>Project 1</td><td>92</td><td>Graded</td></tr>
+      <tr><td>MATH 201</td><td>Quiz 2</td><td>85</td><td>Graded</td></tr>
+      <tr><td>MATH 201</td><td>Homework 3</td><td>—</td><td>Pending</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Upcoming Deadlines</h3>
+    <ul>
+      <li>CS 101 – Final Exam (2025‑06‑01)</li>
+      <li>MATH 201 – Homework 4 (2025‑05‑25)</li>
+    </ul>
+  </div>
+{% endblock %}

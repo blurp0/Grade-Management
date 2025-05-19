@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Instructor Dashboard{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>Welcome, Instructor!</h2>
+    <p>Select a class to manage grades:</p>
+    <ul>
+      <li><a href="#">CS 101 – Intro to CS</a></li>
+      <li><a href="#">MATH 201 – Calculus II</a></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Recent Grade Submissions</h3>
+    <table>
+      <tr><th>Student</th><th>Assignment</th><th>Score</th><th>Date</th></tr>
+      <tr><td>Alice Lee</td><td>Project 1</td><td>95</td><td>2025‑05‑18</td></tr>
+      <tr><td>Bob Reyes</td><td>Quiz 2</td><td>88</td><td>2025‑05‑17</td></tr>
+    </table>
+  </div>
+{% endblock %}
