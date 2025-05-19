@@ -1,5 +1,6 @@
 import enum
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from app import login_manager
 from flask_login import UserMixin
@@ -11,13 +12,19 @@ def load_user(user_id):
 # User table for both students and instructors
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)  # login username
-    password_hash = db.Column(db.String(128), nullable=False)          # hashed password
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(20), nullable=False)  # 'student' or 'instructor'
 
-    # Relationships (optional)
     student = db.relationship("Student", uselist=False, back_populates="user")
     instructor = db.relationship("Instructor", uselist=False, back_populates="user")
+
+    # Convenience wrappers (optional, but nice)
+    def set_password(self, pwd):
+        self.password = pwd
+
+    def check_password(self, pwd):
+        return self.password == pwd 
 
 
 class Student(db.Model):
@@ -81,17 +88,3 @@ class Grade(db.Model):
     # relationships
     student = db.relationship("Student", back_populates="grades")
     subject = db.relationship("Subject", back_populates="grades")
-    
-from . import db
-from werkzeug.security import generate_password_hash, check_password_hash
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)

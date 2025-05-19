@@ -1,21 +1,48 @@
-{% extends "base.html" %}
-{% block title %}Instructor Dashboard{% endblock %}
-{% block content %}
-  <div class="card">
-    <h2>Welcome, Instructor!</h2>
-    <p>Select a class to manage grades:</p>
-    <ul>
-      <li><a href="#">CS 101 – Intro to CS</a></li>
-      <li><a href="#">MATH 201 – Calculus II</a></li>
-    </ul>
-  </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Instructor Home · Grade Management{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/instructor.css') }}" />
+</head>
+<body>
+  <nav>
+    <a href="{{ url_for('main.instructor') }}" class="{% if request.endpoint == 'main.home' %}active{% endif %}">Home</a>
+    <a href="{{ url_for('main.instructor_students') }}" class="{% if active == 'students' %}active{% endif %}">Students</a>
+    <a href="{{ url_for('main.instructor_subjects') }}" class="{% if active == 'subjects' %}active{% endif %}">Subjects</a>
+    <a href="{{ url_for('main.instructor_profile') }}" class="{% if active == 'profile' %}active{% endif %}">Profile</a>
+    <a href="{{ url_for('main.logout') }}" class="logout-link">Logout</a>
+  </nav>
 
-  <div class="card">
-    <h3>Recent Grade Submissions</h3>
-    <table>
-      <tr><th>Student</th><th>Assignment</th><th>Score</th><th>Date</th></tr>
-      <tr><td>Alice Lee</td><td>Project 1</td><td>95</td><td>2025‑05‑18</td></tr>
-      <tr><td>Bob Reyes</td><td>Quiz 2</td><td>88</td><td>2025‑05‑17</td></tr>
-    </table>
-  </div>
-{% endblock %}
+  <main>
+    {% block content %}
+      <section>
+        <h2>Graded Students</h2>
+        {% if graded_students %}
+          <ul>
+            {% for student in graded_students %}
+              <li>{{ student.name }} - Grade: {{ student.grade }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No students have been graded yet.</p>
+        {% endif %}
+      </section>
+
+      <section style="margin-top: 2rem;">
+        <h2>Pending Students</h2>
+        {% if pending_students %}
+          <ul>
+            {% for student in pending_students %}
+              <li>{{ student.name }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>All students have been graded.</p>
+        {% endif %}
+      </section>
+    {% endblock %}
+  </main>
+</body>
+</html>

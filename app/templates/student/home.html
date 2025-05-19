@@ -1,50 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Student Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Student Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}" />
 </head>
 <body>
+
+  <nav>
+    <a href="{{ url_for('main.student') }}" class="{% if request.endpoint == 'main.home' %}active{% endif %}">Home</a>
+    <a href="{{ url_for('main.student_profile') }}" class="{% if request.endpoint == 'main.student_profile' %}active{% endif %}">Profile</a>
+
+
+    <a href="{{ url_for('main.logout') }}" class="logout-link">Logout</a>
+  </nav>
+
+  <main>
     <header>
-        <h1>Welcome, {{ student.name }}!</h1>
-        <p>Year & Section: {{ student.year_and_section }}</p>
-        <p>Subject: {{ student.subject.name if student.subject else 'No Subject Assigned' }}</p>
-        <hr />
+      <h1>Welcome, {{ student.name }}!</h1>
+      <p>Year & Section: {{ student.year_and_section }}</p>
     </header>
 
+    {% block content %}
     <section>
-        <h2>Your Grades</h2>
-        {% if student.grades %}
-        <table border="1" cellpadding="8" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Subject</th>
-                    <th>Grade</th>
-                    <th>Status</th>
-                    <th>Last Updated</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for grade in student.grades %}
-                <tr>
-                    <td>{{ grade.subject.name }}</td>
-                    <td>{{ grade.grade }}</td>
-                    <td>{{ grade.status.value.capitalize() }}</td>
-                    <td>{{ grade.updated_at.strftime("%b %d, %Y") if grade.updated_at else "N/A" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            <p>No grades available yet.</p>
-        {% endif %}
+      <h2>Your Grades</h2>
+      {% if student.grades %}
+      <table>
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Grade</th>
+            <th>Status</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for grade in student.grades %}
+          <tr>
+            <td>{{ grade.subject.name }}</td>
+            <td>{{ grade.grade }}</td>
+            <td>{{ grade.status.value.capitalize() }}</td>
+            <td>{{ grade.updated_at.strftime("%b %d, %Y") if grade.updated_at else "N/A" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>No grades available yet.</p>
+      {% endif %}
     </section>
+    {% endblock %}
 
     <footer>
-        <hr />
-        <p>&copy; 2025 Grade Management System</p>
+      &copy; 2025 Grade Management System
     </footer>
+  </main>
+
 </body>
 </html>

@@ -1,35 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
+<head>
+    <meta charset="UTF-8">
     <title>{% block title %}Grade Management{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-      body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;background:#f7f7f7}
-      header{background:#2c3e50;color:#fff;padding:1rem}
-      nav a{color:#fff;margin-right:1rem;text-decoration:none}
-      main{padding:2rem}
-      .card{background:#fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1);padding:1.5rem;margin-bottom:1.5rem}
-      table{width:100%;border-collapse:collapse}
-      th,td{padding:.5rem;text-align:left;border-bottom:1px solid #eee}
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>Grade Management</h1>
-      <nav>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <nav>
         <a href="{{ url_for('main.home') }}">Home</a>
-        <a href="{{ url_for('main.instructor') }}">Instructor Dashboard</a>
-        <a href="{{ url_for('main.student') }}">Student Dashboard</a>
-        <a href="{{ url_for('main.logout') }}" class="btn btn-danger">Logout</a>
-      </nav>
-    </header>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('main.logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('main.login') }}">Login</a>
+            <a href="{{ url_for('main.register') }}">Register</a>
+        {% endif %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <ul id="flash">
+          {% for category, msg in messages %}
+            <li class="{{ category }}">{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
     <main>
-      {% block content %}
-      
-      
-      {% endblock %}
+        {% block content %}
+          <section class="intro">
+            <h1>Grade Management System</h1>
+            <br><br><br><br>
+            <p>
+              Easily manage grades, assignments, and track performance. Designed for both students and instructors to simplify academic workflows.
+            </p>
+          </section>
+        {% endblock %}
     </main>
-  </body>
+
+    <footer>
+        &copy; 2025 Grade Management
+    </footer>
+</body>
 </html>

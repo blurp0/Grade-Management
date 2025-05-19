@@ -1,0 +1,27 @@
+{% extends "student/home.html" %}
+{% block title %}Student Profile · Grade Management{% endblock %}
+
+{% block content %}
+<h1>Student Profile</h1>
+
+<form method="post">
+    <label>Name
+        <input type="text" name="name" value="{{ student.name }}" required>
+    </label><br>
+
+    <label>Year & Section
+        <input type="text" name="year_and_section" value="{{ student.year_and_section or '' }}">
+    </label><br>
+
+    <label>Subject
+        <select name="subject_id">
+            <option value="">-- Select Subject --</option>
+            {% for subject in subjects %}
+                <option value="{{ subject.id }}" {% if student.subject_id == subject.id %}selected{% endif %}>{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+    </label><br>
+
+    <button type="submit">Update Profile</button>
+</form>
+{% endblock %}

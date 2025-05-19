@@ -1,0 +1,29 @@
+{% extends "instructor/home.html" %}
+{% block title %}Instructor - Students{% endblock %}
+
+{% block content %}
+<h1>Students</h1>
+
+{% if students %}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Year & Section</th>
+            <th>Subject</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.name }}</td>
+            <td>{{ student.year_and_section or 'N/A' }}</td>
+            <td>{{ student.subject.name if student.subject else 'No Subject' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No students found.</p>
+{% endif %}
+{% endblock %}
