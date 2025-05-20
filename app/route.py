@@ -1,6 +1,7 @@
 from flask_login import current_user, login_required, login_user, logout_user
-from flask import Blueprint, request, redirect, url_for, render_template, flash, session
-from .model import Instructor, Subject, User, Student
+from flask import Blueprint, abort, request, redirect, url_for, render_template, flash, session
+from sqlalchemy import distinct, func
+from .model import Grade, GradeStatus, Instructor, Subject, User, Student
 from . import db
 
 bp = Blueprint("main", __name__)
@@ -21,53 +22,134 @@ def home():
 
 # Instructor Navigation
 
+
 @bp.route("/instructor")
 def instructor():
     instructor = Instructor.query.filter_by(user_id=current_user.id).first()
     if not instructor:
         return "Instructor profile not found", 404
-    
-    subjects = instructor.subjects
-    students_set = set()
-    for subject in subjects:
-        students_set.update(subject.students)
-    students = list(students_set)
-    
-    return render_template("instructor/home.html", instructor=instructor, subjects=subjects, students=students)
+
+    subject_ids = [subject.id for subject in instructor.subjects]
+
+    # Query for graded students count
+    graded_student_count = (
+        db.session.query(func.count(distinct(Grade.student_id)))
+        .filter(
+            Grade.subject_id.in_(subject_ids),
+            Grade.status == GradeStatus.GRADED
+        )
+        .scalar()
+    )
+
+    # Query for incomplete students count
+    incomplete_student_count = (
+        db.session.query(func.count(distinct(Grade.student_id)))
+        .filter(
+            Grade.subject_id.in_(subject_ids),
+            Grade.status == GradeStatus.INCOMPLETE
+        )
+        .scalar()
+    )
+
+    return render_template(
+        "instructor/home.html",
+        instructor=instructor,
+        graded_student_count=graded_student_count,
+        incomplete_student_count=incomplete_student_count,
+    )
 
 
 @bp.route("/instructor/students")
+@login_required
 def instructor_students():
+    if current_user.role != "instructor":
+        abort(403)
+
     instructor = Instructor.query.filter_by(user_id=current_user.id).first()
-    if not instructor:
-        return "Instructor profile not found", 404
+    subjects = Subject.query.filter_by(instructor_id=instructor.id).all()
 
-    subjects = instructor.subjects
-    students_set = set()
-    for subject in subjects:
-        students_set.update(subject.students)
-    students = list(students_set)
+    subject_students = {
+        subject: Student.query.filter_by(subject_id=subject.id).all()
+        for subject in subjects
+    }
 
-    return render_template("instructor/student.html", instructor=instructor, subjects=subjects, students=students)
+    return render_template("instructor/student.html", subject_students=subject_students)
 
 
-@bp.route("/instructor/subjects")
-def instructor_subjects():
-    instructor = Instructor.query.filter_by(user_id=current_user.id).first()
-    if not instructor:
-        return "Instructor profile not found", 404
+@bp.route("/assign-grade", methods=["POST"])
+def assign_grade():
+    student_id = request.form["student_id"]
+    subject_id = request.form["subject_id"]
+    grade_input = request.form["grade"].strip()
 
-    subjects = instructor.subjects
-    students_set = set()
-    for subject in subjects:
-        students_set.update(subject.students)
-    students = list(students_set)
+    # Determine status based on grade input
+    if not grade_input:
+        status = GradeStatus.INCOMPLETE
+    elif grade_input == "5.0":
+        status = GradeStatus.FAILED
+    else:
+        try:
+            grade_val = float(grade_input)
+            if 1.0 <= grade_val < 5.0:
+                status = GradeStatus.GRADED
+            else:
+                status = GradeStatus.FAILED
+        except ValueError:
+            flash("Invalid grade format. Use numbers like 1.0 - 5.0.", "danger")
+            return redirect(url_for("main.instructor_students"))
 
-    return render_template("instructor/subjects.html", instructor=instructor, subjects=subjects, students=students)
+    # Get or create Grade record
+    grade = Grade.query.filter_by(student_id=student_id, subject_id=subject_id).first()
+    if not grade:
+        grade = Grade(student_id=student_id, subject_id=subject_id)
 
-@bp.route("/instructor_profile")
+    grade.grade = grade_input  # Store the raw input (can be "5.0", "3.0", etc.)
+    grade.status = status
+
+    db.session.add(grade)
+    db.session.commit()
+
+    flash("Grade saved successfully!", "success")
+    return redirect(url_for("main.instructor_students"))
+
+@bp.route("/instructor/profile", methods=["GET", "POST"])
+@login_required
 def instructor_profile():
-    return render_template("instructor/home.html")
+    if current_user.role != "instructor":
+        flash("Access denied.", "danger")
+        return redirect(url_for("main.index"))
+
+    instructor = current_user.instructor
+    if not instructor:
+        instructor = Instructor(user_id=current_user.id, name="")
+        db.session.add(instructor)
+        db.session.commit()
+
+    all_subjects = Subject.query.all()
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        selected_subject_ids = request.form.getlist("subject_ids")  # note: name="subject_ids" in form
+
+        if not name:
+            flash("Name is required.", "danger")
+            return redirect(url_for("main.instructor_profile"))
+
+        instructor.name = name
+
+        for subject in all_subjects:
+            if str(subject.id) in selected_subject_ids:
+                subject.instructor_id = instructor.id
+            else:
+                if subject.instructor_id == instructor.id:
+                    subject.instructor_id = None
+
+        db.session.commit()
+        flash("Profile updated successfully.", "success")
+        return redirect(url_for("main.instructor_profile"))
+
+    return render_template("instructor/profile.html", instructor=instructor, all_subjects=all_subjects)
+
 
 
 

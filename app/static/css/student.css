@@ -198,3 +198,52 @@ main button[type="submit"] {
 main button[type="submit"]:hover {
   background-color: #003d66;
 }
+
+
+/* Ensure the modal expands based on content */
+.modal-dialog {
+  width: auto;
+  max-width: none;
+  min-width: 600px;
+  margin: auto;
+}
+
+/* Center the content vertically and horizontally */
+.modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+}
+
+/* Style the alert message inside the modal */
+.modal-body .alert {
+  display: inline-block;
+  white-space: nowrap;          /* Prevent wrapping for short text */
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  padding: 1.5rem 2rem;
+  margin: 0;
+}
+
+/* Smooth fade transition */
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-dialog {
+    max-width: 90%;
+    min-width: unset;
+    width: 100%;
+  }
+
+  .modal-body .alert {
+    white-space: normal;
+    word-break: break-word;
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+}

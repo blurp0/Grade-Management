@@ -127,3 +127,35 @@ main ul li:hover {
     box-shadow: none;
   }
 }
+
+
+
+/* Style the alert text inside the modal */
+.modal-body .alert {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  padding: 1.5rem 2rem;
+}
+
+/* Smooth fade transition for modal */
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Adjust modal width */
+.modal-dialog {
+  max-width: 600px;
+}
+
+/* Responsive: Adjust modal size and alert for small screens */
+@media (max-width: 768px) {
+  .modal-dialog {
+    max-width: 90%;
+  }
+
+  .modal-body .alert {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+}
