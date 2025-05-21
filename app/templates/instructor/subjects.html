@@ -1,0 +1,20 @@
+{% extends "instructor/home.html" %}
+{% block title %}Instructor - Subjects{% endblock %}
+
+{% block content %}
+<h1>Subjects</h1>
+
+{% if subjects %}
+<ul>
+    {% for subject in subjects %}
+    <li>
+        <strong>{{ subject.name }}</strong> 
+        <br>
+        Students: {{ subject.students|length }}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No subjects assigned.</p>
+{% endif %}
+{% endblock %}

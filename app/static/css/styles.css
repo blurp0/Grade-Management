@@ -1,0 +1,263 @@
+/* style.css */
+
+/* Reset some default */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    background-color: #ffffff;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation bar */
+nav {
+    background-color: #004085;
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+nav a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    background-color: #004085;
+}
+
+nav a:hover {
+    color: #858585; /* amber accent */
+}
+
+/* Flash messages */
+#flash {
+    list-style: none;
+    max-width: 600px;
+    margin: 1rem auto;
+    padding: 0 1rem;
+}
+
+#flash li {
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+#flash li.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#flash li.danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Main content */
+main {
+    flex-grow: 1;
+    min-width: 500px;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+    color: #777;
+    background-color: #f1f1f1;
+    margin-top: auto;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+    nav {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    main {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}
+
+
+
+.intro {
+    max-width: 700px;
+    margin: 3rem auto;
+    padding: 2rem 2.5rem;
+    background-color: #f9fbfe;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50;
+    line-height: 1.7;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* pushes content to bottom */
+    min-height: 300px; /* or whatever height you want */
+}
+
+.intro h1 {
+    color: #004080;
+    margin-bottom: 1.25rem;
+    font-size: 3rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+.intro p {
+    font-size: 0.875rem; /* smaller text */
+    margin-bottom: 0.75rem;
+    text-align: center;
+    color: #444d58;
+}
+
+
+
+/* Login/Register form container */
+.auth-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem 2.5rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.auth-container h1 {
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  color: #004085;
+}
+
+/* Form groups for spacing */
+.auth-form .form-group {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.auth-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="password"] {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.auth-form input[type="text"]:focus,
+.auth-form input[type="password"]:focus {
+  outline: none;
+  border-color: #ffc107; /* amber accent */
+  box-shadow: 0 0 5px #ffc107;
+}
+
+.btn-primary {
+  background-color: #004085;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #002752;
+}
+
+.auth-footer {
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.auth-footer a {
+  color: #004085;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+/* Ensure the modal expands based on content */
+.modal-dialog {
+  width: auto;
+  max-width: none;
+  min-width: 600px;
+  margin: auto;
+}
+
+/* Center the content vertically and horizontally */
+.modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+}
+
+/* Style the alert message inside the modal */
+.modal-body .alert {
+  display: inline-block;
+  white-space: nowrap;          /* Prevent wrapping for short text */
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  padding: 1.5rem 2rem;
+  margin: 0;
+}
+
+/* Smooth fade transition */
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-dialog {
+    max-width: 90%;
+    min-width: unset;
+    width: 100%;
+  }
+
+  .modal-body .alert {
+    white-space: normal;
+    word-break: break-word;
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+}

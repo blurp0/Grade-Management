@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Register · Grade Management{% endblock %}
+
+{% block content %}
+<section class="auth-container">
+  <h1>Create an Account</h1>
+
+  <form method="post" class="auth-form">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input id="username" type="text" name="username" required autocomplete="username" autofocus>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password" required autocomplete="new-password">
+    </div>
+
+    <div class="form-group">
+      <label for="role">Role</label>
+      <select id="role" name="role" required>
+        <option value="student" selected>Student</option>
+        <option value="instructor">Instructor</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn-primary">Register</button>
+  </form>
+
+  <p class="auth-footer">
+    Already have an account? <a href="{{ url_for('main.login') }}">Log in</a>.
+  </p>
+</section>
+{% endblock %}

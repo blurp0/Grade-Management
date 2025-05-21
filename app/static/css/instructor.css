@@ -1,0 +1,161 @@
+/* Reset some default styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Body & Layout */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  min-height: 100vh;
+  color: #2c3e50;
+  background-color: #f5f7fa;
+}
+
+/* Navigation Sidebar */
+nav {
+  width: 180px;
+  background-color: #004080;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.8rem 1.2rem;
+  border-radius: 6px;
+  margin-bottom: 1.2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+nav a:hover,
+nav a.active {
+  background-color: #ffcc00;
+  color: #004080;
+}
+
+nav a.logout-link {
+  margin-top: auto; /* pushes logout to bottom */
+  background-color: #cc3300;
+  transition: background-color 0.3s ease;
+}
+
+nav a.logout-link:hover {
+  background-color: #ff5733;
+  color: white;
+}
+
+/* Main content */
+main {
+  flex-grow: 1;
+  padding: 2rem 3rem;
+  background-color: white;
+  box-sizing: border-box;
+  overflow-y: auto;
+  min-height: 100vh;
+  box-shadow: inset 0 0 10px #ddd;
+  border-radius: 8px 0 0 8px;
+}
+
+/* Sections inside main */
+main section {
+  margin-bottom: 3rem;
+}
+
+main h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #004080;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ffcc00;
+  padding-bottom: 0.3rem;
+}
+
+/* Lists */
+main ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+main ul li {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 0.7rem;
+  background-color: #f9fafb;
+  font-size: 1.05rem;
+  transition: background-color 0.3s ease;
+}
+
+main ul li:hover {
+  background-color: #e6f0ff;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  body {
+    flex-direction: column;
+  }
+
+  nav {
+    width: 100%;
+    flex-direction: row;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+
+  nav a {
+    margin: 0 1rem 0 0;
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+  }
+
+  nav a.logout-link {
+    margin-top: 0;
+    margin-left: auto;
+  }
+
+  main {
+    padding: 1rem;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+
+
+/* Style the alert text inside the modal */
+.modal-body .alert {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  padding: 1.5rem 2rem;
+}
+
+/* Smooth fade transition for modal */
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Adjust modal width */
+.modal-dialog {
+  max-width: 600px;
+}
+
+/* Responsive: Adjust modal size and alert for small screens */
+@media (max-width: 768px) {
+  .modal-dialog {
+    max-width: 90%;
+  }
+
+  .modal-body .alert {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+}

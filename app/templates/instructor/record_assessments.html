@@ -1,0 +1,59 @@
+{% extends "instructor/home.html" %}
+{% block title %}Record Assessments{% endblock %}
+
+{% block content %}
+<h2>Record Assessments</h2>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th onclick="sortTable(this, 0)">Subject</th>
+      <th onclick="sortTable(this, 0)">Year & Section</th>
+      <th>Upload Excel</th>
+    </tr>
+  </thead>
+<tbody>
+  {% for (subject, section), students in subject_section_students.items() %}
+    <tr>
+      <td>{{ subject.name }}</td>
+      <td>{{ section }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('main.upload_excel_assessments') }}" enctype="multipart/form-data" class="d-flex gap-2 align-items-center">
+          <input type="hidden" name="subject_id" value="{{ subject.id }}">
+          <input type="hidden" name="year_section" value="{{ section }}">
+          <input type="file" name="excel_file" accept=".xlsx,.xls" class="form-control form-control-sm" required>
+          <button type="submit" class="btn btn-success btn-sm">Upload</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
+</table>
+
+
+<script>
+
+    function sortTable(header, colIndex) {
+    const table = header.closest("table");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    const ascending = !header.classList.contains("sorted-asc");
+    table.querySelectorAll("th").forEach(th => th.classList.remove("sorted-asc", "sorted-desc"));
+    header.classList.add(ascending ? "sorted-asc" : "sorted-desc");
+
+    rows.sort((a, b) => {
+      const aText = a.children[colIndex].innerText.trim();
+      const bText = b.children[colIndex].innerText.trim();
+      const isNumeric = !isNaN(aText) && !isNaN(bText);
+      return ascending ? (
+        isNumeric ? aText - bText : aText.localeCompare(bText)
+      ) : (
+        isNumeric ? bText - aText : bText.localeCompare(aText)
+      );
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+  }
+</script>
+{% endblock %}

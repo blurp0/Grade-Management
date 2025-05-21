@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Student Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+  <nav>
+    <a href="{{ url_for('main.student') }}" class="{% if request.endpoint == 'main.home' %}active{% endif %}">Home</a>
+    <a href="{{ url_for('main.student_profile') }}" class="{% if request.endpoint == 'main.student_profile' %}active{% endif %}">Profile</a>
+
+
+    <a href="{{ url_for('main.logout') }}" class="logout-link">Logout</a>
+  </nav>
+
+  <main>
+
+    {% block content %}
+
+    <header>
+      <h1>Welcome, {{ student.name }}!</h1>
+      <p>Year & Section: {{ student.year_and_section }}</p>
+    </header>
+
+    <section>
+      <h2>Your Grades</h2>
+      {% if student.grades %}
+      <table>
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Grade</th>
+            <th>Status</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for grade in student.grades %}
+          <tr>
+            <td>{{ grade.subject.name }}</td>
+            <td>{{ grade.grade }}</td>
+            <td>{{ grade.status.value.capitalize() }}</td>
+            <td>{{ grade.updated_at.strftime("%b %d, %Y") if grade.updated_at else "N/A" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>No grades available yet.</p>
+      {% endif %}
+    </section>
+    {% endblock %}
+
+    <footer>
+      &copy; 2025 Grade Management System
+    </footer>
+  </main>
+
+
+{% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+    <div class="modal fade" id="flashModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            {% for category, msg in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'error' else category }} mb-0" role="alert">
+                {{ msg }}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var flashModal = document.getElementById('flashModal');
+    if (flashModal) {
+      var modal = new bootstrap.Modal(flashModal);
+      modal.show();
+
+      // Auto close after 3 seconds
+      setTimeout(function() {
+        modal.hide();
+      }, 3000);
+    }
+  });
+</script>
+
+</body>
+</html>
