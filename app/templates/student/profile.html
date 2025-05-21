@@ -9,18 +9,22 @@
         <input type="text" name="name" value="{{ student.name }}" required>
     </label><br>
 
+    <label>Student Number
+        <input type="text" name="student_no" value="{{ student.student_no or '' }}" required>
+    </label><br>
+
     <label>Year & Section
         <input type="text" name="year_and_section" value="{{ student.year_and_section or '' }}">
     </label><br>
 
-    <label>Subject
-        <select name="subject_id">
-            <option value="">-- Select Subject --</option>
-            {% for subject in subjects %}
-                <option value="{{ subject.id }}" {% if student.subject_id == subject.id %}selected{% endif %}>{{ subject.name }}</option>
-            {% endfor %}
-        </select>
-    </label><br>
+    <label>Subjects</label><br>
+    {% for subject in subjects %}
+        <label>
+            <input type="checkbox" name="subject_ids" value="{{ subject.id }}"
+                {% if subject in student.subjects %}checked{% endif %}>
+            {{ subject.name }}
+        </label><br>
+    {% endfor %}
 
     <button type="submit">Update Profile</button>
 </form>

@@ -2,101 +2,195 @@
 {% block title %}Instructor - Students{% endblock %}
 
 {% block content %}
-<h1>Students by Subject</h1>
+<h1>Students by Subject & Section</h1>
 
 {% if subject_students %}
+<!-- Filter Controls -->
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label for="subjectFilter">Filter by Subject:</label>
+    <select id="subjectFilter" class="form-select">
+      <option value="all">All Subjects</option>
+      {% for subject in subject_students.keys() %}
+        <option value="subject-{{ loop.index }}">{{ subject.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-4">
+    <label for="sectionFilter">Filter by Year & Section:</label>
+    <select id="sectionFilter" class="form-select">
+      <option value="all">All Sections</option>
+      {% set all_sections = [] %}
+      {% for students in subject_students.values() %}
+        {% for student in students %}
+          {% if student.year_and_section and student.year_and_section not in all_sections %}
+            {% set _ = all_sections.append(student.year_and_section) %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+      {% for section in all_sections %}
+        <option value="{{ section }}">{{ section }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+<div class="col-md-4 d-flex align-items-end">
+  <button type="button" class="btn btn-primary btn-sm grading-weight-btn" 
+          data-bs-toggle="modal" data-bs-target="#gradingWeightModal">
+    Grading Weight Settings
+  </button>
+</div>
+
+</div>
+
+<!-- Subject Accordion -->
 <div class="accordion" id="subjectAccordion">
-    {% for subject, students in subject_students.items() %}
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading-{{ loop.index }}">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapse-{{ loop.index }}" aria-expanded="false"
-                aria-controls="collapse-{{ loop.index }}">
-                {{ subject.name }}
-            </button>
-        </h2>
-        <div id="collapse-{{ loop.index }}" class="accordion-collapse collapse"
-            aria-labelledby="heading-{{ loop.index }}" data-bs-parent="#subjectAccordion">
-            <div class="accordion-body">
-                {% if students %}
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Year & Section</th>
-                            <th>Status Grade</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for student in students %}
-                        {% set grade = student.grades | selectattr("subject_id", "equalto", subject.id) | list | first %}
-                        <tr>
-                            <td>{{ student.name }}</td>
-                            <td>{{ student.year_and_section or 'N/A' }}</td>
-                            <td>{{ grade.status.value.capitalize() if grade else 'Ungraded' }}</td>
-                            <td>
-                                <!-- Button trigger modal -->
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#gradeModal-{{ subject.id }}-{{ student.id }}">
-                                    Grade
-                                </button>
-                            </td>
-                        </tr>
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="gradeModal-{{ subject.id }}-{{ student.id }}" tabindex="-1"
-                            aria-labelledby="gradeModalLabel-{{ subject.id }}-{{ student.id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <form method="post" action="{{ url_for('main.assign_grade') }}">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="gradeModalLabel-{{ subject.id }}-{{ student.id }}">
-                                                Grade {{ student.name }} ({{ subject.name }})
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <input type="hidden" name="student_id" value="{{ student.id }}">
-                                            <input type="hidden" name="subject_id" value="{{ subject.id }}">
-
-                                            <div class="mb-3">
-                                                <label class="form-label">Grade</label>
-                                                <select class="form-select" name="grade">
-                                                    <option value="">Incomplete</option>
-                                                    {% for g in ['1.0', '1.25', '1.5', '1.75', '2.0', '2.25', '2.5', '2.75', '3.0', '4.0', '5.0'] %}
-                                                    <option value="{{ g }}"
-                                                        {% if grade and grade.grade == g %}selected{% endif %}>
-                                                        {{ g }} {% if g == '5.0' %}(Failed){% endif %}
-                                                    </option>
-                                                    {% endfor %}
-                                                </select>
-                                                <small class="text-muted">Select a grade. Leave blank for Incomplete.</small>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" class="btn btn-primary">Save Grade</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p>No students enrolled in this subject.</p>
-                {% endif %}
-            </div>
-        </div>
+  {% for subject, students in subject_students.items() %}
+  <div class="accordion-item subject-section" data-subject="subject-{{ loop.index }}">
+    <h2 class="accordion-header" id="heading-{{ loop.index }}">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+        data-bs-target="#collapse-{{ loop.index }}" aria-expanded="false"
+        aria-controls="collapse-{{ loop.index }}">
+        {{ subject.name }}
+      </button>
+    </h2>
+    <div id="collapse-{{ loop.index }}" class="accordion-collapse collapse"
+      aria-labelledby="heading-{{ loop.index }}" data-bs-parent="#subjectAccordion">
+      <div class="accordion-body">
+        {% if students %}
+        <table class="table table-bordered sortable">
+          <thead>
+            <tr>
+              <th onclick="sortTable(this, 0)">Name</th>
+              <th onclick="sortTable(this, 1)">Year & Section</th>
+              <th onclick="sortTable(this, 2)">Quiz Total</th>
+              <th onclick="sortTable(this, 3)">Assignment Total</th>
+              <th onclick="sortTable(this, 4)">Midterm</th>
+              <th onclick="sortTable(this, 5)">Finals</th>
+              <th>Status</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in students %}
+              {% set grade = student.grades | selectattr("subject_id", "equalto", subject.id) | list | first %}
+              <tr data-section="{{ student.year_and_section }}">
+                <td>{{ student.name }}</td>
+                <td>{{ student.year_and_section or 'N/A' }}</td>
+                <td>{{ grade.total_quiz_score if grade and grade.total_quiz_score is not none else 0 }}</td>
+                <td>{{ grade.total_assignment_score if grade and grade.total_assignment_score is not none else 0 }}</td>
+                <td>{{ grade.midterm if grade and grade.midterm is not none else 'N/A' }}</td>
+                <td>{{ grade.finals if grade and grade.finals is not none else 'N/A' }}</td>
+                <td>{{ grade.status.value.capitalize() if grade else 'Ungraded' }}</td>
+                <td>{{ grade.grade if grade and grade.grade else 'N/A' }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No students enrolled in this subject.</p>
+        {% endif %}
+      </div>
     </div>
-    {% endfor %}
+  </div>
+  {% endfor %}
 </div>
 {% else %}
 <p>No subjects or students found.</p>
 {% endif %}
+
+<!-- Modal -->
+<div class="modal fade" id="gradingWeightModal" tabindex="-1" aria-labelledby="gradingWeightLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content grading-weight-form" method="POST" action="{{ url_for('main.save_grading_weights') }}">
+      <div class="modal-header">
+        <h5 class="modal-title" id="gradingWeightLabel">Grading Weight Settings (Apply to All Subjects)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="weight-error" class="alert alert-danger" style="display:none;"></div>
+        <div class="mb-3">
+          <label for="quizWeight" class="form-label">Quizzes (%)</label>
+          <input type="number" class="form-control" name="quiz_weight" id="quizWeight" min="0" max="100" value="15" required>
+        </div>
+        <div class="mb-3">
+          <label for="assignmentWeight" class="form-label">Assignments (%)</label>
+          <input type="number" class="form-control" name="assignment_weight" id="assignmentWeight" min="0" max="100" value="15" required>
+        </div>
+        <div class="mb-3">
+          <label for="midtermWeight" class="form-label">Midterm Exam (%)</label>
+          <input type="number" class="form-control" name="midterm_weight" id="midtermWeight" min="0" max="100" value="20" required>
+        </div>
+        <div class="mb-3">
+          <label for="finalWeight" class="form-label">Final Exam (%)</label>
+          <input type="number" class="form-control" name="final_weight" id="finalWeight" min="0" max="100" value="50" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save Weights</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Filter controls
+    const subjectFilter = document.getElementById("subjectFilter");
+    const sectionFilter = document.getElementById("sectionFilter");
+
+    function filterView() {
+      const selectedSubject = subjectFilter.value;
+      const selectedSection = sectionFilter.value;
+
+      document.querySelectorAll(".subject-section").forEach((accordion) => {
+        const isMatchingSubject = selectedSubject === "all" || accordion.dataset.subject === selectedSubject;
+        let hasMatchingStudent = false;
+
+        accordion.querySelectorAll("tbody tr").forEach(row => {
+          const section = row.dataset.section;
+          const isMatchingSection = selectedSection === "all" || section === selectedSection;
+
+          row.style.display = isMatchingSection ? "" : "none";
+          if (isMatchingSubject && isMatchingSection) {
+            hasMatchingStudent = true;
+          }
+        });
+
+        accordion.style.display = isMatchingSubject && hasMatchingStudent ? "" : "none";
+      });
+    }
+
+    subjectFilter.addEventListener("change", filterView);
+    sectionFilter.addEventListener("change", filterView);
+  });
+
+  // Sort table function
+  function sortTable(header, colIndex) {
+    const table = header.closest("table");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    const ascending = !header.classList.contains("sorted-asc");
+    table.querySelectorAll("th").forEach(th => th.classList.remove("sorted-asc", "sorted-desc"));
+    header.classList.add(ascending ? "sorted-asc" : "sorted-desc");
+
+    rows.sort((a, b) => {
+      const aText = a.children[colIndex].innerText.trim();
+      const bText = b.children[colIndex].innerText.trim();
+      const isNumeric = !isNaN(aText) && !isNaN(bText);
+      return ascending ? (
+        isNumeric ? aText - bText : aText.localeCompare(bText)
+      ) : (
+        isNumeric ? bText - aText : bText.localeCompare(aText)
+      );
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+  }
+</script>
+
 {% endblock %}

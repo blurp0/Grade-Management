@@ -19,12 +19,14 @@
   </nav>
 
   <main>
+
+    {% block content %}
+
     <header>
       <h1>Welcome, {{ student.name }}!</h1>
       <p>Year & Section: {{ student.year_and_section }}</p>
     </header>
 
-    {% block content %}
     <section>
       <h2>Your Grades</h2>
       {% if student.grades %}

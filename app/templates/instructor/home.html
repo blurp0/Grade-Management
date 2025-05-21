@@ -13,6 +13,7 @@
 <body>
   <nav>
     <a href="{{ url_for('main.instructor') }}" class="{% if request.endpoint == 'main.home' %}active{% endif %}">Home</a>
+    <a href="{{ url_for('main.record_assessments') }}" class="{% if request.endpoint == 'main.home' %}active{% endif %}">Grade</a>
     <a href="{{ url_for('main.instructor_students') }}" class="{% if active == 'students' %}active{% endif %}">Students</a>
     <a href="{{ url_for('main.instructor_profile') }}" class="{% if active == 'profile' %}active{% endif %}">Profile</a>
     <a href="{{ url_for('main.logout') }}" class="logout-link">Logout</a>
